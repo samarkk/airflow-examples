@@ -1,8 +1,70 @@
+# clone airflow-examples
+git clone https://github.com/samarkk/airflow-examples
+# copy the configuration to airflow 
+# we will start straight with the celery executor
+# back up the original file
+cp /home/samar/airflow/airflow.cfg /home/samar/airflow/airflow.cfg.orig
+cp /home/samar/airflow-examples/airflow.cfg /home/samar/airflow
 
+# use mysql as the metastore
+# install dependencies
+sudo yum install python3-devel mysql-devel
+# install mysqlclient
+pip install mysqlclient
 
+# have to set the character for airflow to utf8 otherwise we will have the key too long error
+mysql -u root -p'punnetRai10198)' -e 'alter database ariflow character set utf8'
+
+# init the db
+airflow db init
+
+# check that tables have been created
+mysql -u root -p'punnetRai10198)' airflow -e 'show tables'
+
+# create the airflow user
 airflow users create \
     --username admin \
     --firstname Peter \
     --lastname Parker \
     --role Admin \
     --email spiderman@superhero.org
+# set password as admin when prompted
+
+# start webserver, scheduler, celery worker, celery flower
+airflow webserver
+ariflow scheduler
+airflow celery worker
+airflow celery flower
+
+# set dags_folder to /home/samar/airflow-examples/dags
+# already taken care of in the copying from the repsoitory
+# in airflow.cfg - the executor is set to CeleryExecutor, the result_backend to mysql and the broker will work with redis which is already installed and running
+
+# basic dag demo
+run first_dag.py
+# see dependencies between dagruns past and downstream
+run depends_dag.py
+# catchup and backfill
+run backfill.py
+# set up dag folders
+run add_dagbags.py
+# carry out the steps for packaged_dag.py
+# notificaton on completion
+run alert_dag.py
+# subdags to minimize repititve patterns
+run test_subdag.py
+# with workers less than grouped subdags deadlocks can happen
+explain deadlock_subdags.py
+# look at task group and branching
+run a_example_task_group.py
+run a_example_branch_operator.py
+# trigger rules between dags
+run trigger_rule_dag.py
+# variables and templates
+run template_dag.py
+# sharing data between dags - xcoms
+run xcom_dag.py
+# trigger one dag from another dat
+tirgger_op_controller_dag.py and triggerdagop_targets_dag.py
+# external task sensor dag
+use sleep.dag and externaltasksensor_dag.py
